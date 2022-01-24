@@ -11,6 +11,7 @@ function parseJS(code) {
     loc: true,
     comments: true,
     tokens: true,
+    ecmaVersion: 'latest'
   });
 }
 

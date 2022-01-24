@@ -5,7 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
-const { parseJS } = require('./parse');
+const analyzeJS = require('./analyzer');
 
 /**
  * Recursively walks {srcDir}, finding all files that match a pattern listed in {globMatchPatterns}
@@ -17,7 +17,7 @@ const { parseJS } = require('./parse');
 function withFilesInDir(srcDir, callback, matchPatterns) {
   /// TODO (injuly): add support for ignoring file patterns and handle symlinks
   const handleSingleFile = filePath => {
-    fs.readFile(filePath, (err, data) => {
+    fs.readFile(filePath, 'utf-8',(err, data) => {
       /// TODO (injuly): handle this error
       if (err) return;
       callback(filePath, data);
@@ -42,8 +42,8 @@ function withFilesInDir(srcDir, callback, matchPatterns) {
  * @param {string} dirPath path to the directory containing the source code.
  */
 function analyzeDirectory(dirPath) {
-  const analyzeFile = (_, data) => {
-    console.log(parseJS(data));
+  const analyzeFile = (fileName, sourceCode) => {
+    analyzeJS(fileName, sourceCode);
   };
   withFilesInDir(dirPath, analyzeFile, ['**/*.js']);
 }
