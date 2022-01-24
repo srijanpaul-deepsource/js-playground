@@ -18,7 +18,10 @@ const rule = {
       const numExports = this.cache.get('num_exports') || 1;
       this.cache.set('num_exports', numExports + 1);
       if (numExports > 1) {
-        context.report("Avoid having multiple module.exports.")
+        context.report({
+          message: "Avoid having multiple exports.",
+          loc: node.loc
+        })
       }
     }
   }

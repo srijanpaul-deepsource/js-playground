@@ -1,4 +1,4 @@
 - [x] Recursively walk directory and parse the files in it.
-- [ ] Ability to define rules and call them on AST Nodes.
-- [ ] Retain state across visits.
+- [x] Ability to define rules and call them on AST Nodes.
+- [x] Retain state across visits.
 - [ ] Ignore files that match certain patterns.
