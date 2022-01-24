@@ -14,7 +14,9 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
+    "@types/esquery": "^1.0.2",
     "espree": "^9.3.0",
+    "esquery": "^1.4.0",
     "glob": "^7.2.0",
     "typescript-eslint-parser": "^22.0.0"
   }

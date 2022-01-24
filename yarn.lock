@@ -52,6 +52,18 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@types/esquery@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/esquery/-/esquery-1.0.2.tgz#ccab4b6bd1aec356d5daa5b3abc55eac703c332d"
+  integrity sha512-qeAoHiWfqF4ST6An3DM2r1743bWL7B5hW4oNR9tWkdOjFUR1aK2j0jnYvW6h30VGDeXQ+1bWOYTej4JVo/5+PA==
+  dependencies:
+    "@types/estree" "*"
+
+"@types/estree@*":
+  version "0.0.50"
+  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.50.tgz#1e0caa9364d3fccd2931c3ed96fdbeaa5d4cca83"
+  integrity sha512-C6N5s2ZFtuZRj54k2/zyRhNDjJwwcViAM3Nbm8zjBpbqAdZ00mr0CFxvSKeO8Y/e03WVFLpQMdHYVfUd6SB+Hw==
+
 "@types/json-schema@^7.0.9":
   version "7.0.9"
   resolved "https://registry.npmjs.org/@types/json-schema/-/json-schema-7.0.9.tgz"
@@ -387,7 +399,7 @@ espree@^9.2.0, espree@^9.3.0:
 
 esquery@^1.4.0:
   version "1.4.0"
-  resolved "https://registry.npmjs.org/esquery/-/esquery-1.4.0.tgz"
+  resolved "https://registry.yarnpkg.com/esquery/-/esquery-1.4.0.tgz#2148ffc38b82e8c7057dfed48425b3e61f0f24a5"
   integrity sha512-cCDispWt5vHHtwMY2YrAQ4ibFkAL8RbH5YGBnZBc90MolvvfkkQcJro/aZiAQUlQ3qgrYS6D6v8Gc5G5CQsc9w==
   dependencies:
     estraverse "^5.1.0"

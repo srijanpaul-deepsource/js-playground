@@ -11,7 +11,7 @@ class ASTVisitor {
 
     // @brief `checksForNodeType[x]` returns a list of all checks that are
     // concerned with the node type `x`.
-    this.checksForNodeType = {}; 
+    this.checksForNodeType = {};
   }
 
   // @param {Check} check A check to add
@@ -72,6 +72,38 @@ class ASTVisitor {
   BlockStatement(node) {
     for (const stat of node.body) {
       this.visit(stat);
+    }
+  }
+
+  ExpressionStatement(node) {
+    this.visit(node.expression);
+  }
+
+  AssignmentExpression(node) {
+    this.visit(node.left);
+    this.visit(node.right);
+  }
+
+  MemberExpression(node) {
+    this.visit(node.object);
+    this.visit(node.property);
+  }
+
+  ObjectExpression(node) {
+    for (const property of node.properties) {
+      this.visit(property);
+    }
+  }
+
+  Property(node) {
+    this.visit(node.key);
+    this.visit(node.value);
+  }
+
+  CallExpression(node) {
+    this.visit(node.callee);
+    for (const arg of node.arguments) {
+      this.visit(arg);
     }
   }
 }

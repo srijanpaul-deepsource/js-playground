@@ -5,7 +5,7 @@ class Check {
       this[key] = fun.bind(this);
       this.nodesToVisit.push(key);
     }
-    this.cache = {};
+    this.cache = new Map();
     if (this.init) this.init(this.cache);
   }
 }
