@@ -1,3 +1,22 @@
+/**
+ * @typedef {Object} Location A deepsource comptabile file coordinate.
+ * @property {number} line 
+ * @property {number} column 
+ */
+
+/**
+ * @typedef {Object} Position A deepsource compatible position marker.
+ * @property {Location} begin
+ * @property {Location} end 
+ */
+
+/**
+ * @typedef {Object} Issue A deepsource compatible issue object.
+ * @property {string} issue_text A message describing the issue.
+ * @property {string} issue_code A deepsource issue code (eg - 'JS-W001').
+ * @property {Position} position Position in source where the issue is raised.
+ */
+
 class CheckerContext {
   constructor(visitor, filePath, sourceString) {
     this.visitor = visitor;
@@ -5,7 +24,11 @@ class CheckerContext {
     this.sourceString = sourceString;
   }
 
-  /// @brief Convert node's location into deepsource compatible format
+  /**
+   * Convert node's location into deepsource compatible format.
+   * @param {SourceLocation | Location} loc
+   * @returns {Position} DeepSource formatted position.
+   */
   formatPosition(loc) {
     // a `loc` attached to an ESTree node can either be a `SourceLocation` object
     // or a `Position` object. However deepsource requires all location info
@@ -40,6 +63,11 @@ class CheckerContext {
   }
 
   /// @brief Make a report compatible with deepsource.
+  /**
+   * 
+   * @param {Report} reportDesc 
+   * @returns 
+   */
   formatReport(reportDesc) {
     const position = this.formatPosition(reportDesc.loc);
 
@@ -54,15 +82,32 @@ class CheckerContext {
     return dsReport;
   }
 
+
+  /**
+   * @typedef {Object} Report An object describing an issue raised.
+   * @property {string} message
+   * @property {SourcePosition|Location} loc
+   */
+
+  /**
+   * Raise an issue.
+   * @param {Report} reportDesc An object describing the issue that occurred.
+   */
   report(reportDesc) {
     const finalReport = this.formatReport(reportDesc);
     this.visitor.collectReport(finalReport);
   }
 }
 
-
+/**
+ * A base AST visitor class that recursively visits every AST Node and executes the checks
+ */
 class ASTVisitor {
-  // @param {Check[]} checks List of check classes to use
+  /**
+   * @param {string} filePath Path to the JS file (used for reporting).
+   * @param {string} source The contents of the JS file.
+   * @param {Check[]|undefined} checks The checks to apply to this source file.
+   */
   constructor(filePath, source, checks) {
     this.checks = checks || [];
     for (const check of this.checks) {
@@ -80,7 +125,10 @@ class ASTVisitor {
     this.reports = [];
   }
 
-  // @param {Check} check A check to add
+  /**
+   * Add a new check to the analysis. 
+   * @param {Check} check The check to add.
+   */
   addCheck(check) {
     for (const nodeName of check.nodesToVisit) {
       if (!this.checksForNodeType[nodeName]) {
@@ -103,7 +151,12 @@ class ASTVisitor {
     });
   }
 
-  // @param {Node|undefined} node An AST Node
+  /**
+   * Visit an AST Node, executing all corresponding checks and recusrively
+   * visiting it's children .
+   * @param {Node} node 
+   * @returns {void}
+   */
   visit(node) {
     if (!node) return;
 
