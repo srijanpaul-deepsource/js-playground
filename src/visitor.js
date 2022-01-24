@@ -62,11 +62,10 @@ class CheckerContext {
     }
   }
 
-  /// @brief Make a report compatible with deepsource.
   /**
-   * 
+   * Convert a report object into a deepsource compatible issue.
    * @param {Report} reportDesc 
-   * @returns 
+   * @returns {Issue}
    */
   formatReport(reportDesc) {
     const position = this.formatPosition(reportDesc.loc);
