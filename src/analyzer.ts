@@ -1,6 +1,6 @@
 import ASTVisitor from './visitor';
 import Check, { CheckDescriptor } from './check';
-const { parseJS } = require('./parse');
+import { parseJS } from './parse';
 const checkDescriptors = require('./checks');
 
 /**

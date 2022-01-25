@@ -88,4 +88,3 @@ export default class Check {
     this.visitor = desc;
   }
 }
-

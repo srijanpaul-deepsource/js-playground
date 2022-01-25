@@ -204,19 +204,19 @@ export default class ASTVisitor {
     }
   }
 
-  Program(node: Program): void {
+  Program(node: Program) {
     for (const stat of node.body) {
       this.visit(stat);
     }
   }
 
-  VariableDeclaration(node: VariableDeclaration): void {
+  VariableDeclaration(node: VariableDeclaration) {
     for (const decl of node.declarations) {
       this.visit(decl);
     }
   }
 
-  VariableDeclarator(node: VariableDeclarator): void {
+  VariableDeclarator(node: VariableDeclarator) {
     this.visit(node.id);
     if (node.init) this.visit(node.init);
   }
@@ -227,17 +227,17 @@ export default class ASTVisitor {
     }
   }
 
-  BlockStatement(node: BlockStatement): void {
+  BlockStatement(node: BlockStatement) {
     for (const stat of node.body) {
       this.visit(stat);
     }
   }
 
-  ExpressionStatement(node: ExpressionStatement): void {
+  ExpressionStatement(node: ExpressionStatement) {
     this.visit(node.expression);
   }
 
-  AssignmentExpression(node: AssignmentExpression): void {
+  AssignmentExpression(node: AssignmentExpression) {
     this.visit(node.left);
     this.visit(node.right);
   }
