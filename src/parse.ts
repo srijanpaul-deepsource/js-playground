@@ -1,3 +1,4 @@
+import { Program } from "estree";
 const espree = require('espree');
 
 /**
@@ -5,7 +6,7 @@ const espree = require('espree');
  * @param {string} code The JS source code to parse
  * @returns An AST representation of the code, with location information
  */
-function parseJS(code) {
+function parseJS(code: string): Program {
   return espree.parse(code, {
     range: true,
     loc: true,

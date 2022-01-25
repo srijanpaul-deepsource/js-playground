@@ -2,11 +2,13 @@
  * @fileoverview The driver code that crawls a source directory and calls the analyzer on each file.
  */
 
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
 const analyzeJS = require('./analyzer');
+import path from 'path';
+import fs from 'fs';
+import glob from 'glob';
 
+
+type WithFileCallBack = (fileName: string, contents: string) => any;
 /**
  * Recursively walks {srcDir}, finding all files that match a pattern listed in {globMatchPatterns}
  * and calling {callback} on each file and it's contents.
@@ -14,10 +16,10 @@ const analyzeJS = require('./analyzer');
  * @param {(string, string) => any} callback The function that is called for each matching file
  * @param {string[]} matchPatterns Array of file patterns to match
  */
-function withFilesInDir(srcDir, callback, matchPatterns) {
+function withFilesInDir(srcDir: string, callback: WithFileCallBack, matchPatterns: string[]) {
   /// TODO (injuly): add support for ignoring file patterns and handle symlinks
-  const handleSingleFile = filePath => {
-    fs.readFile(filePath, 'utf-8',(err, data) => {
+  const handleSingleFile = (filePath: string) => {
+    fs.readFile(filePath, 'utf-8', (err, data) => {
       /// TODO (injuly): handle this error
       if (err) return;
       callback(filePath, data);
@@ -41,14 +43,6 @@ function withFilesInDir(srcDir, callback, matchPatterns) {
  * Runs the analyzer on all matching files in a directory.
  * @param {string} dirPath path to the directory containing the source code.
  */
-function analyzeDirectory(dirPath) {
-  const analyzeFile = (fileName, sourceCode) => {
-    analyzeJS(fileName, sourceCode);
-  };
-  withFilesInDir(dirPath, analyzeFile, ['**/*.js']);
+export function analyzeDirectory(dirPath: string) {
+  withFilesInDir(dirPath, analyzeJS, ['**/*.js']);
 }
-
-module.exports = {
-  withFilesInDir,
-  analyzeDirectory,
-};

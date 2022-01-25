@@ -1,4 +1,7 @@
-const rule = {
+import { CheckDescriptor } from "../check";
+
+const rule: CheckDescriptor = {
+  cache: {},
   ArrayExpression(context, node) {
     for (const el of node.elements) {
       if (el === null) {
@@ -12,4 +15,4 @@ const rule = {
   }
 }
 
-module.exports = rule
+module.exports = rule;
