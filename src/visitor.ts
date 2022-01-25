@@ -1,5 +1,6 @@
-import { ArrayExpression, AssignmentExpression, BlockStatement, CallExpression, ExpressionStatement, MemberExpression, Node, ObjectExpression, Position as ESTreePosition, Program, Property, SourceLocation, VariableDeclaration, VariableDeclarator } from "estree";
-import Check from "./check";
+import { ArrayExpression, AssignmentExpression, AssignmentPattern, BinaryExpression, BlockStatement, CallExpression, DebuggerStatement, DoWhileStatement, EmptyStatement, ExpressionStatement, ForInStatement, ForOfStatement, ForStatement, IfStatement, MemberExpression, Node, ObjectExpression, Pattern, Position as ESTreePosition, Program, Property, ReturnStatement, SourceLocation, TemplateLiteral, ThisExpression, ThrowStatement, TryStatement, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, WhileStatement } from "estree";
+import Check from './check';
+import clc from 'cli-color';
 
 export type Coordinate = {
   line: number;
@@ -81,10 +82,10 @@ class CheckerContext {
 
   /**
    * Convert a report object into a deepsource compatible issue.
-   * @param {Report} reportDesc 
+   * @param {Report} reportDesc The report object to generate an issue from.
    * @returns {Issue}
    */
-  formatReport(reportDesc: ReportDescriptor) {
+  formatReport(reportDesc: ReportDescriptor): Issue {
     const position = this.formatPosition(reportDesc.loc);
 
     // TODO (injuly): Add issue codes too!
@@ -118,15 +119,21 @@ class CheckerContext {
 /**
  * A base AST visitor class that recursively visits every AST Node and executes the checks
  */
-type Indexable = {
+type IChecksForNodeName = {
   [k: string]: Check[];
 };
 export default class ASTVisitor {
   private filePath: string;
+  private source: string;
   private checks: Check[];
 
-  private checksForNodeType: Indexable = {};
+  /**
+   * `checksForNodeType[x]` Returns a list of all the checks that are concerned
+   * with the node of type `x`.
+   */
+  private checksForNodeType: IChecksForNodeName = {};
   private context: CheckerContext;
+  // The list of issues reported so far in DeepSource's format.
   private issues: Issue[] = [];
   /**
    * @param {string} filePath Path to the JS file (used for reporting).
@@ -134,15 +141,13 @@ export default class ASTVisitor {
    * @param {Check[]|undefined} checks The checks to apply to this source file.
    */
   constructor(filePath: string, source: string, checks?: Check[]) {
-    // `checksForNodeType[x]` returns a list of all checks that are
-    // concerned with the node type `x`.
-
     this.checksForNodeType = {};
     this.checks = checks || [];
     for (const check of this.checks) {
       this.addCheck(check);
     }
 
+    this.source = source;
     this.filePath = filePath;
     this.context = new CheckerContext(this, filePath, source);
   }
@@ -160,17 +165,22 @@ export default class ASTVisitor {
     }
   }
 
+  /**
+   * Add an issue to be raised once analysis is completed.
+   */
   collectReport(report: Issue) {
     this.issues.push(report);
   }
 
   logReports(log = console.log) {
-    log(`In ${this.filePath}: `);
+    log(`In ${clc.bold(this.filePath)}: `);
     this.issues.forEach(issue => {
       const { begin } = issue.location.position;
-      const fmt = `Ln ${begin.line}, Col ${begin.column}: ${issue.issue_text}`;
+      const loc = clc.redBright(`Ln ${begin.line}, Col ${begin.column}`)
+      const fmt = `${loc}: ${issue.issue_text}`;
       log(fmt);
     });
+    log();
   }
 
   /**
@@ -199,7 +209,7 @@ export default class ASTVisitor {
     // this `if` statement should be replaced with an assertion.
     // @ts-ignore
     if (this[type]) {
-    // @ts-ignore
+      // @ts-ignore
       this[type](node);
     }
   }
@@ -263,6 +273,73 @@ export default class ASTVisitor {
     for (const arg of node.arguments) {
       this.visit(arg);
     }
+  }
+
+  BinaryExpression(node: BinaryExpression) {
+    this.visit(node.left);
+    this.visit(node.right);
+  }
+
+  ReturnStatement(node: ReturnStatement) {
+    this.visit(node.argument);
+  }
+
+  TemplateLiteral(node: TemplateLiteral) {
+    for (const exp of node.expressions) {
+      this.visit(exp);
+    }
+  }
+
+  UnaryExpression(node: UnaryExpression) {
+    this.visit(node.argument);
+  }
+
+  ForStatement(node: ForStatement) {
+    this.visit(node.init);
+    this.visit(node.test);
+    this.visit(node.update);
+    this.visit(node.body);
+  }
+
+  ForInStatement(node: ForInStatement) {
+    this.visit(node.left);
+    this.visit(node.right);
+    this.visit(node.body);
+  }
+
+  ForOfStatement(node: ForOfStatement) {
+    this.visit(node.left);
+    this.visit(node.right);
+    this.visit(node.body);
+  }
+
+  WhileStatement(node: WhileStatement) {
+    this.visit(node.body);
+  }
+
+  IfStatement(node: IfStatement) {
+    this.visit(node.test);
+    this.visit(node.consequent);
+    this.visit(node.alternate);
+  }
+
+  DoWhileStatement(node: DoWhileStatement) {
+    this.visit(node.body);
+  }
+
+  TryStatement(node: TryStatement) {
+    this.visit(node.block);
+    this.visit(node.handler);
+    this.visit(node.finalizer);
+  }
+
+  ThrowStatement(node: ThrowStatement) {
+    this.visit(node.argument);
+  }
+
+  AssignmentPattern(node: AssignmentPattern) {
+    this.visit(node.left);
+    this.visit(node.right);
   }
 }
 
