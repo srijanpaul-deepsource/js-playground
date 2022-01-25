@@ -1,7 +1,6 @@
 const { parseJS } = require('./parse');
 const Check = require('./check');
-const arrayGaps = require('./checks/array-gaps');
-const noMultipleExports = require('./checks/no-multiple-exports');
+const checkDescriptors = require('./checks');
 const ASTVisitor = require('./visitor');
 
 /**
@@ -13,9 +12,8 @@ const ASTVisitor = require('./visitor');
 function analyzeJS(filePath, code, visitor) {
   // TODO (@injuly): handle parsing errors (if any).
   const ast = parseJS(code);
-  visitor = visitor || new ASTVisitor(filePath);
-  visitor.addCheck(new Check(arrayGaps));
-  visitor.addCheck(new Check(noMultipleExports));
+  const checks = checkDescriptors.map(desc => new Check(desc));
+  visitor = visitor || new ASTVisitor(filePath, code, checks);
   visitor.visit(ast);
 
   // TODO (@injuly): Instead of logging them, return the reports array.
