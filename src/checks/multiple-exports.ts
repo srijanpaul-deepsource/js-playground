@@ -24,7 +24,7 @@ const rule: CheckDescriptor = {
         })
       }
     }
-  }
+  },
 }
 
 module.exports = rule;
