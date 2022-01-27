@@ -6,7 +6,7 @@ const checkDescriptors = require('./checks');
 /**
  * Analyzes a Javascript file and logs the analysis report.
  * @param filePath Path of the source file.
- * @param code JS Source code to analyze 
+ * @param code JS Source code to analyze
  * @param visitor The ASTVisitor to use.
  */
 function analyzeJS(filePath: string, code: string, visitor?: ASTVisitor) {
