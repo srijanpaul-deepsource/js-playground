@@ -7,8 +7,7 @@ import path from 'path';
 import fs from 'fs';
 import glob from 'glob';
 
-
-type WithFileCallBack = (fileName: string, contents: string) => any;
+type WithFileCallBack = (fileName: string, contents: string) => void;
 /**
  * Recursively walks {srcDir}, finding all files that match a pattern listed in {globMatchPatterns}
  * and calling {callback} on each file and it's contents.
@@ -24,7 +23,7 @@ function withFilesInDir(srcDir: string, callback: WithFileCallBack, matchPattern
       if (err) return;
       callback(filePath, data);
     });
-  }
+  };
 
   matchPatterns.forEach(pattern =>
     glob(pattern, { cwd: srcDir }, (err, matches) => {
@@ -32,10 +31,9 @@ function withFilesInDir(srcDir: string, callback: WithFileCallBack, matchPattern
       if (err) return;
       matches.forEach(fileName => {
         const fullFilePath = path.join(srcDir, fileName);
-        handleSingleFile(fullFilePath)
+        handleSingleFile(fullFilePath);
       });
-    }
-    )
+    })
   );
 }
 

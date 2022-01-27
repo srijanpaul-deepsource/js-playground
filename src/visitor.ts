@@ -1,41 +1,73 @@
-import { ArrayExpression, AssignmentExpression, AssignmentPattern, BinaryExpression, BlockStatement, CallExpression, DebuggerStatement, DoWhileStatement, EmptyStatement, ExpressionStatement, ForInStatement, ForOfStatement, ForStatement, IfStatement, MemberExpression, Node, ObjectExpression, Pattern, Position as ESTreePosition, Program, Property, ReturnStatement, SourceLocation, TemplateLiteral, ThisExpression, ThrowStatement, TryStatement, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, WhileStatement } from "estree";
+import {
+  ArrayExpression,
+  AssignmentExpression,
+  AssignmentPattern,
+  BinaryExpression,
+  BlockStatement,
+  CallExpression,
+  DoWhileStatement,
+  ExpressionStatement,
+  ForInStatement,
+  ForOfStatement,
+  ForStatement,
+  IfStatement,
+  MemberExpression,
+  Node,
+  ObjectExpression,
+  Position as ESTreePosition,
+  Program,
+  Property,
+  ReturnStatement,
+  SourceLocation,
+  TemplateLiteral,
+  ThrowStatement,
+  TryStatement,
+  UnaryExpression,
+  VariableDeclaration,
+  VariableDeclarator,
+  WhileStatement,
+} from 'estree';
 import Check from './check';
 import clc from 'cli-color';
 
 export type Coordinate = {
   line: number;
   column: number;
-}
+};
 
 export type Position = {
   begin: Coordinate;
   end: Coordinate;
-}
+};
 
 export type Location = {
   path: string;
   position: Position;
-}
-
-export type Issue = {
-  issue_text: string;
-  issue_code: string;
-  location: Location;
-}
-
-export type ReportDescriptor = {
-  message: string;
-  loc: SourceLocation | ESTreePosition;
-}
+};
 
 /**
- * @typedef {Object} Issue A deepsource compatible issue object.
- * @property {string} issue_text A message describing the issue.
- * @property {string} issue_code A deepsource issue code (eg - 'JS-W001').
- * @property {Position} position Position in source where the issue is raised.
+ * A DeepSource compatible issue object.
  */
+export type Issue = {
+  // Message describing the issue raised.
+  issue_text: string;
+  // Issue code in DeepSource format.
+  issue_code: string;
+  // file path and begin/end coordinates where the issue was raised.
+  location: Location;
+};
 
-class CheckerContext {
+/**
+ * A data type representing an issue raised by a Check.
+ */
+export type ReportDescriptor = {
+  // Description of the problem.
+  message: string;
+  // Location of the node where the issue is to be raised.
+  loc: SourceLocation | ESTreePosition;
+};
+
+export class CheckerContext {
   private visitor: ASTVisitor;
   private filePath: string;
   private sourceString: string;
@@ -45,7 +77,7 @@ class CheckerContext {
     this.sourceString = sourceString;
   }
 
-  formatPosition(loc: SourceLocation | Coordinate): Position {
+  private formatPosition(loc: SourceLocation | Coordinate): Position {
     // a `loc` attached to an ESTree node can either be a `SourceLocation` object
     // or a `Position` object. However deepsource requires all location info
     // to be in a uniform format.
@@ -61,23 +93,23 @@ class CheckerContext {
 
         end: {
           line: loc.end.line,
-          column: loc.end.column
-        }
-      }
+          column: loc.end.column,
+        },
+      };
     }
 
     loc = loc as Coordinate;
     return {
       begin: {
         line: loc.line,
-        column: loc.column
+        column: loc.column,
       },
 
       end: {
         line: loc.line,
-        column: loc.column
-      }
-    }
+        column: loc.column,
+      },
+    };
   }
 
   /**
@@ -85,7 +117,7 @@ class CheckerContext {
    * @param {Report} reportDesc The report object to generate an issue from.
    * @returns {Issue}
    */
-  formatReport(reportDesc: ReportDescriptor): Issue {
+  private formatReport(reportDesc: ReportDescriptor): Issue {
     const position = this.formatPosition(reportDesc.loc);
 
     // TODO (injuly): Add issue codes too!
@@ -94,12 +126,11 @@ class CheckerContext {
       issue_code: '404',
       location: {
         path: this.filePath,
-        position
-      }
+        position,
+      },
     };
     return dsReport;
   }
-
 
   /**
    * @typedef {Object} Report An object describing an issue raised.
@@ -153,7 +184,7 @@ export default class ASTVisitor {
   }
 
   /**
-   * Add a new check to the analysis. 
+   * Add a new check to the analysis.
    * @param {Check} check The check to add.
    */
   addCheck(check: Check) {
@@ -176,7 +207,7 @@ export default class ASTVisitor {
     log(`In ${clc.bold(this.filePath)}: `);
     this.issues.forEach(issue => {
       const { begin } = issue.location.position;
-      const loc = clc.redBright(`Ln ${begin.line}, Col ${begin.column}`)
+      const loc = clc.redBright(`Ln ${begin.line}, Col ${begin.column}`);
       const fmt = `${loc}: ${issue.issue_text}`;
       log(fmt);
     });
@@ -186,7 +217,7 @@ export default class ASTVisitor {
   /**
    * Visit an AST Node, executing all corresponding checks and recusrively
    * visiting it's children .
-   * @param {Node} node 
+   * @param {Node} node
    * @returns {void}
    */
   visit(node?: Node | null): void {
@@ -342,4 +373,3 @@ export default class ASTVisitor {
     this.visit(node.right);
   }
 }
-
