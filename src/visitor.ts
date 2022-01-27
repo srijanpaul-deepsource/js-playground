@@ -167,9 +167,9 @@ export default class ASTVisitor {
   // The list of issues reported so far in DeepSource's format.
   private issues: Issue[] = [];
   /**
-   * @param {string} filePath Path to the JS file (used for reporting).
-   * @param {string} source The contents of the JS file.
-   * @param {Check[]|undefined} checks The checks to apply to this source file.
+   * @param filePath Path to the JS file (used for issue reporting).
+   * @param source The contents of the JS file.
+   * @param checks The checks to apply to this source file.
    */
   constructor(filePath: string, source: string, checks?: Check[]) {
     this.checksForNodeType = {};
@@ -185,7 +185,7 @@ export default class ASTVisitor {
 
   /**
    * Add a new check to the analysis.
-   * @param {Check} check The check to add.
+   * @param check The check to add.
    */
   addCheck(check: Check) {
     for (const nodeName of check.nodesToVisit) {
@@ -217,8 +217,7 @@ export default class ASTVisitor {
   /**
    * Visit an AST Node, executing all corresponding checks and recusrively
    * visiting it's children .
-   * @param {Node} node
-   * @returns {void}
+   * @param node The node to visit.
    */
   visit(node?: Node | null): void {
     if (!node) return;

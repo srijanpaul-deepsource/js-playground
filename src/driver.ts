@@ -2,7 +2,7 @@
  * @fileoverview The driver code that crawls a source directory and calls the analyzer on each file.
  */
 
-const analyzeJS = require('./analyzer');
+import { analyzeJS } from './analyzer';
 import path from 'path';
 import fs from 'fs';
 import glob from 'glob';

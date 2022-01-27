@@ -2,9 +2,9 @@ import { Program } from 'estree';
 const espree = require('espree');
 
 /**
- * @brief parses regular ES compatible JavaScript source code.
- * @param {string} code The JS source code to parse
- * @returns An AST representation of the code, with location information
+ * Parses regular ES compatible JavaScript source code.
+ * @param code The JS source code to parse
+ * @returns An ESTree compatible AST representation of the code, with location information
  */
 export function parseJS(code: string): Program {
   return espree.parse(code, {

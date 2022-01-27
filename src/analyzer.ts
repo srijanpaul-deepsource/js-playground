@@ -9,7 +9,7 @@ const checkDescriptors = require('./checks');
  * @param code JS Source code to analyze 
  * @param visitor The ASTVisitor to use.
  */
-function analyzeJS(filePath: string, code: string, visitor?: ASTVisitor) {
+export function analyzeJS(filePath: string, code: string, visitor?: ASTVisitor) {
   // TODO (@injuly): handle parsing errors (if any).
   const ast = parseJS(code);
   const checks = checkDescriptors.map((desc: CheckDescriptor) => new Check(desc));
@@ -20,4 +20,3 @@ function analyzeJS(filePath: string, code: string, visitor?: ASTVisitor) {
   visitor.logReports();
 }
 
-module.exports = analyzeJS;
