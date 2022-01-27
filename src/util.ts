@@ -65,7 +65,7 @@ export const JsNodeNames = new Set([
   'VariableDeclaration',
   'VariableDeclarator',
   'WhileStatement',
-  'WithStatement'
-])
+  'WithStatement',
+]);
 
 export default JsNodeNames;
