@@ -4,7 +4,7 @@ import { CheckerContext } from './visitor';
 
 type NodeVisitorFunc<T extends ESTree.BaseNode> = (
   ctx: CheckerContext,
-  node: T & ESTree.BaseNode
+  node: T
 ) => void;
 
 export type CheckDescriptor = {
