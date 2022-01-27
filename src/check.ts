@@ -6,8 +6,14 @@ export type CheckDescriptor = {
   init?: () => void;
   ArrayExpression?: (context: any, node: ESTree.ArrayExpression & ESTree.BaseNode) => void;
   ArrayPattern?: (context: any, node: ESTree.ArrayPattern & ESTree.BaseNode) => void;
-  ArrowFunctionExpression?: (context: any, node: ESTree.ArrowFunctionExpression & ESTree.BaseNode) => void;
-  AssignmentExpression?: (context: any, node: ESTree.AssignmentExpression & ESTree.BaseNode) => void;
+  ArrowFunctionExpression?: (
+    context: any,
+    node: ESTree.ArrowFunctionExpression & ESTree.BaseNode
+  ) => void;
+  AssignmentExpression?: (
+    context: any,
+    node: ESTree.AssignmentExpression & ESTree.BaseNode
+  ) => void;
   AssignmentPattern?: (context: any, node: ESTree.AssignmentPattern & ESTree.BaseNode) => void;
   AwaitExpression?: (context: any, node: ESTree.AwaitExpression & ESTree.BaseNode) => void;
   BinaryExpression?: (context: any, node: ESTree.BinaryExpression & ESTree.BaseNode) => void;
@@ -19,14 +25,26 @@ export type CheckDescriptor = {
   ClassBody?: (context: any, node: ESTree.ClassBody & ESTree.BaseNode) => void;
   ClassDeclaration?: (context: any, node: ESTree.ClassDeclaration & ESTree.BaseNode) => void;
   ClassExpression?: (context: any, node: ESTree.ClassExpression & ESTree.BaseNode) => void;
-  ConditionalExpression?: (context: any, node: ESTree.ConditionalExpression & ESTree.BaseNode) => void;
+  ConditionalExpression?: (
+    context: any,
+    node: ESTree.ConditionalExpression & ESTree.BaseNode
+  ) => void;
   ContinueStatement?: (context: any, node: ESTree.ContinueStatement & ESTree.BaseNode) => void;
   DebuggerStatement?: (context: any, node: ESTree.DebuggerStatement & ESTree.BaseNode) => void;
   DoWhileStatement?: (context: any, node: ESTree.DoWhileStatement & ESTree.BaseNode) => void;
   EmptyStatement?: (context: any, node: ESTree.EmptyStatement & ESTree.BaseNode) => void;
-  ExportAllDeclaration?: (context: any, node: ESTree.ExportAllDeclaration & ESTree.BaseNode) => void;
-  ExportDefaultDeclaration?: (context: any, node: ESTree.ExportDefaultDeclaration & ESTree.BaseNode) => void;
-  ExportNamedDeclaration?: (context: any, node: ESTree.ExportNamedDeclaration & ESTree.BaseNode) => void;
+  ExportAllDeclaration?: (
+    context: any,
+    node: ESTree.ExportAllDeclaration & ESTree.BaseNode
+  ) => void;
+  ExportDefaultDeclaration?: (
+    context: any,
+    node: ESTree.ExportDefaultDeclaration & ESTree.BaseNode
+  ) => void;
+  ExportNamedDeclaration?: (
+    context: any,
+    node: ESTree.ExportNamedDeclaration & ESTree.BaseNode
+  ) => void;
   ExportSpecifier?: (context: any, node: ESTree.ExportSpecifier & ESTree.BaseNode) => void;
   ExpressionStatement?: (context: any, node: ESTree.ExpressionStatement & ESTree.BaseNode) => void;
   ForInStatement?: (context: any, node: ESTree.ForInStatement & ESTree.BaseNode) => void;
@@ -37,9 +55,15 @@ export type CheckDescriptor = {
   Identifier?: (context: any, node: ESTree.Identifier & ESTree.BaseNode) => void;
   IfStatement?: (context: any, node: ESTree.IfStatement & ESTree.BaseNode) => void;
   ImportDeclaration?: (context: any, node: ESTree.ImportDeclaration & ESTree.BaseNode) => void;
-  ImportDefaultSpecifier?: (context: any, node: ESTree.ImportDefaultSpecifier & ESTree.BaseNode) => void;
+  ImportDefaultSpecifier?: (
+    context: any,
+    node: ESTree.ImportDefaultSpecifier & ESTree.BaseNode
+  ) => void;
   ImportExpression?: (context: any, node: ESTree.ImportExpression & ESTree.BaseNode) => void;
-  ImportNamespaceSpecifier?: (context: any, node: ESTree.ImportNamespaceSpecifier & ESTree.BaseNode) => void;
+  ImportNamespaceSpecifier?: (
+    context: any,
+    node: ESTree.ImportNamespaceSpecifier & ESTree.BaseNode
+  ) => void;
   ImportSpecifier?: (context: any, node: ESTree.ImportSpecifier & ESTree.BaseNode) => void;
   LabeledStatement?: (context: any, node: ESTree.LabeledStatement & ESTree.BaseNode) => void;
   Literal?: (context: any, node: ESTree.Literal & ESTree.BaseNode) => void;
@@ -59,7 +83,10 @@ export type CheckDescriptor = {
   Super?: (context: any, node: ESTree.Super & ESTree.BaseNode) => void;
   SwitchCase?: (context: any, node: ESTree.SwitchCase & ESTree.BaseNode) => void;
   SwitchStatement?: (context: any, node: ESTree.SwitchStatement & ESTree.BaseNode) => void;
-  TaggedTemplateExpression?: (context: any, node: ESTree.TaggedTemplateExpression & ESTree.BaseNode) => void;
+  TaggedTemplateExpression?: (
+    context: any,
+    node: ESTree.TaggedTemplateExpression & ESTree.BaseNode
+  ) => void;
   TemplateElement?: (context: any, node: ESTree.TemplateElement & ESTree.BaseNode) => void;
   TemplateLiteral?: (context: any, node: ESTree.TemplateLiteral & ESTree.BaseNode) => void;
   ThisExpression?: (context: any, node: ESTree.ThisExpression & ESTree.BaseNode) => void;
@@ -72,7 +99,7 @@ export type CheckDescriptor = {
   WhileStatement?: (context: any, node: ESTree.WhileStatement & ESTree.BaseNode) => void;
   WithStatement?: (context: any, node: ESTree.WithStatement & ESTree.BaseNode) => void;
   YieldExpression?: (context: any, node: ESTree.YieldExpression & ESTree.BaseNode) => void;
-}
+};
 
 export default class Check {
   nodesToVisit: string[] = [];

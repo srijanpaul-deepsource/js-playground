@@ -1,4 +1,4 @@
-import { Program } from "estree";
+import { Program } from 'estree';
 const espree = require('espree');
 
 /**
@@ -12,6 +12,6 @@ export function parseJS(code: string): Program {
     loc: true,
     comments: true,
     tokens: true,
-    ecmaVersion: 'latest'
+    ecmaVersion: 'latest',
   });
 }
