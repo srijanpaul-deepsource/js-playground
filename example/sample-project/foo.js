@@ -1,4 +1,4 @@
-var x = 1
+var x = 1;
 
 module.exports = { foo: 2 };
 console.log(x);
