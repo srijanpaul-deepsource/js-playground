@@ -11,9 +11,9 @@ type WithFileCallBack = (fileName: string, contents: string) => void;
 /**
  * Recursively walks {srcDir}, finding all files that match a pattern listed in {globMatchPatterns}
  * and calling {callback} on each file and it's contents.
- * @param {string} srcDir The source directory to walk recursively
- * @param {(string, string) => any} callback The function that is called for each matching file
- * @param {string[]} matchPatterns Array of file patterns to match
+ * @param srcDir The source directory to walk recursively
+ * @param callback The function that is called for each matching file
+ * @param matchPatterns Array of file patterns to match
  */
 function withFilesInDir(srcDir: string, callback: WithFileCallBack, matchPatterns: string[]) {
   /// TODO (injuly): add support for ignoring file patterns and handle symlinks
@@ -39,7 +39,7 @@ function withFilesInDir(srcDir: string, callback: WithFileCallBack, matchPattern
 
 /**
  * Runs the analyzer on all matching files in a directory.
- * @param {string} dirPath path to the directory containing the source code.
+ * @param dirPath path to the directory containing the source code.
  */
 export function analyzeDirectory(dirPath: string) {
   withFilesInDir(dirPath, analyzeJS, ['**/*.js']);
