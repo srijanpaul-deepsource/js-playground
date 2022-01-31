@@ -1,7 +1,10 @@
 import { convertReport, ReportDescriptor } from './ds-utils';
 import ASTVisitor from './ast-visitor';
 
-export class CheckerContext {
+/**
+ * A CheckerContext encapsulates the current state of an ASTVisitor.
+ */
+export default class VisitorContext {
   private visitor: ASTVisitor;
   private filePath: string;
   private sourceString: string;
@@ -12,7 +15,9 @@ export class CheckerContext {
     this.sourceString = sourceString;
   }
 
-  getScope() {}
+  getScope() {
+    // TODO:
+  }
 
   /**
    * @typedef {Object} Report An object describing an issue raised.

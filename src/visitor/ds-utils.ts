@@ -39,6 +39,11 @@ export type ReportDescriptor = {
   loc: SourceLocation | ESTreePosition;
 };
 
+/**
+ * Converts an ESTree location to a DeepSource position object.
+ * @param loc The location attached to an ESTree node.
+ * @returns A deepsource compatible Position object.
+ */
 export function convertPosition(loc: SourceLocation | Coordinate): Position {
   // a `loc` attached to an ESTree node can either be a `SourceLocation` object
   // or a `Position` object. However deepsource requires all location info
