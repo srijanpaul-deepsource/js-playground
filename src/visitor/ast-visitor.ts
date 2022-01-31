@@ -59,7 +59,7 @@ export default class ASTVisitor {
   constructor(filePath: string, source: string, checks?: Check[]) {
     this.checksForNodeType = {};
     this.checks = checks || [];
-    this.checks.forEach(check => this.addCheck(check))
+    this.checks.forEach(check => this.addCheck(check));
     this.source = source;
     this.filePath = filePath;
     this.context = new VisitorContext(this, filePath, source);
