@@ -23,5 +23,8 @@
     "esquery": "^1.4.0",
     "glob": "^7.2.0",
     "typescript-eslint-parser": "^22.0.0"
+  },
+  "scripts": {
+    "build": "tsc --build"
   }
 }

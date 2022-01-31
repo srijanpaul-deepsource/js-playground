@@ -1,11 +1,8 @@
 import ESTree from 'estree';
 import JsNodeNames from './util';
-import { CheckerContext } from './visitor';
+import VisitorContext from './visitor/visitor-context';
 
-type NodeVisitorFunc<T extends ESTree.BaseNode> = (
-  ctx: CheckerContext,
-  node: T
-) => void;
+type NodeVisitorFunc<T extends ESTree.BaseNode> = (ctx: VisitorContext, node: T) => void;
 
 export type CheckDescriptor = {
   cache: Record<string, any>;
@@ -82,7 +79,6 @@ export type CheckDescriptor = {
 
 export default class Check {
   nodesToVisit: string[] = [];
-  cache = new Map<string, CheckerContext>();
   visitor: CheckDescriptor;
 
   constructor(desc: CheckDescriptor) {

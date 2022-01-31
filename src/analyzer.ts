@@ -1,4 +1,4 @@
-import ASTVisitor from './visitor';
+import ASTVisitor from './visitor/ast-visitor';
 import Check, { CheckDescriptor } from './check';
 import { parseJS } from './parse';
 const checkDescriptors = require('./checks');
@@ -6,7 +6,7 @@ const checkDescriptors = require('./checks');
 /**
  * Analyzes a Javascript file and logs the analysis report.
  * @param filePath Path of the source file.
- * @param code JS Source code to analyze 
+ * @param code JS Source code to analyze
  * @param visitor The ASTVisitor to use.
  */
 export function analyzeJS(filePath: string, code: string, visitor?: ASTVisitor) {
@@ -19,4 +19,3 @@ export function analyzeJS(filePath: string, code: string, visitor?: ASTVisitor) 
   // TODO (@injuly): Instead of logging them, return the reports array.
   visitor.logReports();
 }
-
