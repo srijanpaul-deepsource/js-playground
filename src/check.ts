@@ -1,6 +1,6 @@
 import ESTree from 'estree';
 import JsNodeNames from './util';
-import { CheckerContext } from './visitor';
+import { CheckerContext } from './visitor/visitor-context';
 
 type NodeVisitorFunc<T extends ESTree.BaseNode> = (
   ctx: CheckerContext,

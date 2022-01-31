@@ -1,3 +1,4 @@
+import clc from 'cli-color';
 import {
   ArrayExpression,
   AssignmentExpression,
@@ -14,11 +15,9 @@ import {
   MemberExpression,
   Node,
   ObjectExpression,
-  Position as ESTreePosition,
   Program,
   Property,
   ReturnStatement,
-  SourceLocation,
   TemplateLiteral,
   ThrowStatement,
   TryStatement,
@@ -27,132 +26,17 @@ import {
   VariableDeclarator,
   WhileStatement,
 } from 'estree';
-import Check from './check';
-import clc from 'cli-color';
+import Check from '../check';
+import { CheckerContext } from './visitor-context';
+import { Issue } from './ds-utils';
 
-export type Coordinate = {
-  line: number;
-  column: number;
+type IChecksForNodeName = {
+  [k: string]: Check[];
 };
-
-export type Position = {
-  begin: Coordinate;
-  end: Coordinate;
-};
-
-export type Location = {
-  path: string;
-  position: Position;
-};
-
-/**
- * A DeepSource compatible issue object.
- */
-export type Issue = {
-  // Message describing the issue raised.
-  issue_text: string;
-  // Issue code in DeepSource format.
-  issue_code: string;
-  // file path and begin/end coordinates where the issue was raised.
-  location: Location;
-};
-
-/**
- * A data type representing an issue raised by a Check.
- */
-export type ReportDescriptor = {
-  // Description of the problem.
-  message: string;
-  // Location of the node where the issue is to be raised.
-  loc: SourceLocation | ESTreePosition;
-};
-
-export class CheckerContext {
-  private visitor: ASTVisitor;
-  private filePath: string;
-  private sourceString: string;
-  constructor(visitor: ASTVisitor, filePath: string, sourceString: string) {
-    this.visitor = visitor;
-    this.filePath = filePath;
-    this.sourceString = sourceString;
-  }
-
-  private formatPosition(loc: SourceLocation | Coordinate): Position {
-    // a `loc` attached to an ESTree node can either be a `SourceLocation` object
-    // or a `Position` object. However deepsource requires all location info
-    // to be in a uniform format.
-
-    // `loc` is a SourceLocation.
-    if ((loc as SourceLocation).start) {
-      loc = loc as SourceLocation;
-      return {
-        begin: {
-          line: loc.start.line,
-          column: loc.start.column,
-        },
-
-        end: {
-          line: loc.end.line,
-          column: loc.end.column,
-        },
-      };
-    }
-
-    loc = loc as Coordinate;
-    return {
-      begin: {
-        line: loc.line,
-        column: loc.column,
-      },
-
-      end: {
-        line: loc.line,
-        column: loc.column,
-      },
-    };
-  }
-
-  /**
-   * Convert a report object into a deepsource compatible issue.
-   * @param {Report} reportDesc The report object to generate an issue from.
-   * @returns {Issue}
-   */
-  private formatReport(reportDesc: ReportDescriptor): Issue {
-    const position = this.formatPosition(reportDesc.loc);
-
-    // TODO (injuly): Add issue codes too!
-    const dsReport: Issue = {
-      issue_text: reportDesc.message,
-      issue_code: '404',
-      location: {
-        path: this.filePath,
-        position,
-      },
-    };
-    return dsReport;
-  }
-
-  /**
-   * @typedef {Object} Report An object describing an issue raised.
-   * @property {string} message
-   * @property {SourcePosition|Location} loc
-   */
-
-  /**
-   * Raise an issue.
-   */
-  report(reportDesc: ReportDescriptor) {
-    const finalReport = this.formatReport(reportDesc);
-    this.visitor.collectReport(finalReport);
-  }
-}
 
 /**
  * A base AST visitor class that recursively visits every AST Node and executes the checks
  */
-type IChecksForNodeName = {
-  [k: string]: Check[];
-};
 export default class ASTVisitor {
   private filePath: string;
   private source: string;
@@ -166,6 +50,7 @@ export default class ASTVisitor {
   private context: CheckerContext;
   // The list of issues reported so far in DeepSource's format.
   private issues: Issue[] = [];
+
   /**
    * @param filePath Path to the JS file (used for issue reporting).
    * @param source The contents of the JS file.
