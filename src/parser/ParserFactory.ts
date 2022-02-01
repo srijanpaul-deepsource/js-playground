@@ -14,7 +14,7 @@ export default class ParserFactory {
    * @param options Custom options to be passed to the parser if any
    * @returns a parser object
    */
-  static getParser(extension: string, options: object) {
+  static getParser(extension: string, options: Object) {
     const extToParserMap = {
       '.js': () => new JSParser(options),
       '.jsx': () => new JSXParser(options),

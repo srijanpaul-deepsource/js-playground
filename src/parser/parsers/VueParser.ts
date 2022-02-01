@@ -15,9 +15,9 @@ export default class VueParser {
       ts: '@typescript-eslint/typescript-estree',
     },
   };
-  options: object;
+  options: Object;
 
-  constructor(options: object) {
+  constructor(options: Object) {
     this.options = Object.assign(this.defaultOptions, options);
   }
 

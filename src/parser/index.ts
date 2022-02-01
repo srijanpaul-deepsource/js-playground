@@ -9,14 +9,9 @@ import ParserFactory from './ParserFactory';
  * @returns the AST of the parsed code
  */
 // TODO: Change 'object' type for 'options' arg to a proper interface (type) after deciding on the options input structure
-export default function parse(filePath: string, code: string, options: object = {}) {
-  // Get the file extension
+export default function parse(filePath: string, code: string, options: Object = {}) {
   const extension = extname(filePath);
-
-  // Get the suitable parser
   const parser = ParserFactory.getParser(extension, options);
-
-  // Return the parsed code
   const ast = parser.parse(code, options);
 
   return ast;

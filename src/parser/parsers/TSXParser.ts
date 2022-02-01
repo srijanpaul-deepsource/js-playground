@@ -12,9 +12,9 @@ export default class TSXParser {
     ecmaVersion: 'latest',
     jsx: true,
   };
-  options: object;
+  options: Object;
 
-  constructor(options: object) {
+  constructor(options: Object) {
     this.options = Object.assign(this.defaultOptions, options);
   }
 

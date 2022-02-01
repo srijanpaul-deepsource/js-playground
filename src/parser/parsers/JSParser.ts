@@ -12,9 +12,9 @@ export default class JSParser {
     tokens: true,
     ecmaVersion: 'latest',
   };
-  options: object;
+  options: Object;
 
-  constructor(options: object) {
+  constructor(options: Object) {
     this.options = Object.assign(this.defaultOptions, options);
   }
 
