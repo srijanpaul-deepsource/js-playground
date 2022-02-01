@@ -17,10 +17,12 @@ export type Variable = {
 
 class Scope {
   private readonly variables = new Map<string, Variable>();
+  public readonly node?: Node;
   readonly parent: Scope | null;
 
-  constructor(parentScope?: Scope) {
+  constructor(node?: Node, parentScope?: Scope) {
     this.parent = parentScope ?? null;
+    this.node = node;
   }
 
   /**
@@ -78,6 +80,7 @@ export default class VisitorContext {
 
   constructor(visitor: ASTVisitor, filePath: string, sourceString: string) {
     this.visitor = visitor;
+    this.globalScope = this.currentScope;
     this.filePath = filePath;
     this.sourceString = sourceString;
   }
@@ -110,8 +113,8 @@ export default class VisitorContext {
   }
 
   // Enter a new block scope
-  enterScope() {
-    const newScope = new Scope(this.currentScope);
+  enterScope(node: Node) {
+    const newScope = new Scope(node, this.currentScope);
     this.currentScope = newScope;
   }
 

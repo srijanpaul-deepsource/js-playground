@@ -68,4 +68,10 @@ export const JsNodeNames = new Set([
   'WithStatement',
 ]);
 
-export default JsNodeNames;
+export function assert<T>(value: T, msg?: string): T {
+  msg = msg || "assertion failed!";
+  if (!value) {
+    throw new Error(msg);
+  }
+  return value;
+}
