@@ -1,6 +1,6 @@
 import ASTVisitor from './visitor/ast-visitor';
 import Check, { CheckDescriptor } from './check';
-import { parseJS } from './parse';
+import parse from './parser/index';
 const checkDescriptors = require('./checks');
 
 /**
@@ -9,9 +9,9 @@ const checkDescriptors = require('./checks');
  * @param code JS Source code to analyze
  * @param visitor The ASTVisitor to use.
  */
-export function analyzeJS(filePath: string, code: string, visitor?: ASTVisitor) {
+export function analyze(filePath: string, code: string, visitor?: ASTVisitor) {
   // TODO (@injuly): handle parsing errors (if any).
-  const ast = parseJS(code);
+  const ast = parse(filePath, code);
   const checks = checkDescriptors.map((desc: CheckDescriptor) => new Check(desc));
   visitor = visitor || new ASTVisitor(filePath, code, checks);
   visitor.visit(ast);
