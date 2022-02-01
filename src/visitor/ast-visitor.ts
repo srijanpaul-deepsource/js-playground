@@ -1,6 +1,7 @@
 import clc from 'cli-color';
 import {
   ArrayExpression,
+  ArrowFunctionExpression,
   AssignmentExpression,
   AssignmentPattern,
   BinaryExpression,
@@ -12,8 +13,11 @@ import {
   ForInStatement,
   ForOfStatement,
   ForStatement,
+  FunctionDeclaration,
+  FunctionExpression,
   Identifier,
   IfStatement,
+  ImportDeclaration,
   MemberExpression,
   Node,
   ObjectExpression,
@@ -58,7 +62,7 @@ export default class ASTVisitor {
    * with the node of type `x`.
    */
   private checksForNodeType: IChecksForNodeName = {};
-  private context: VisitorContext;
+  private context?: VisitorContext;
   // The list of issues reported so far in DeepSource's format.
   private issues: Issue[] = [];
 
@@ -73,7 +77,6 @@ export default class ASTVisitor {
     this.checks.forEach(check => this.addCheck(check));
     this.source = source;
     this.filePath = filePath;
-    this.context = new VisitorContext(this, filePath, source);
   }
 
   /**
@@ -107,13 +110,19 @@ export default class ASTVisitor {
     log();
   }
 
+  checkAST(program: Program, conf: Object = {}): Issue[] {
+    this.context = new VisitorContext(this, this.filePath, this.source, program, {})
+    this.visit(program);
+    return this.issues;
+  }
+
   /**
    * Visit an AST Node, executing all corresponding checks and recusrively
    * visiting it's children .
    * @param node The node to visit.
    * @param parent Parent / surrounding node of `node`.
    */
-  visit(node: Node | null, parent?: Node): void {
+  private visit(node: Node | null, parent?: Node): void {
     if (!node) return;
 
     // Extend the node with it's parent so that checks can refer to it.
@@ -136,154 +145,165 @@ export default class ASTVisitor {
     if (this[type]) this[type](node);
   }
 
-  Program(node: Program): void {
-    this.context.enterScope(node);
+  private Program(node: Program): void {
     for (const stat of node.body) {
       this.visit(stat, node);
     }
   }
 
-  VariableDeclaration(node: VariableDeclaration): void {
+  private VariableDeclaration(node: VariableDeclaration): void {
     for (const decl of node.declarations) {
       this.visit(decl, node);
     }
   }
 
-  VariableDeclarator(node: WithParent<VariableDeclarator>): void {
+  private VariableDeclarator(node: WithParent<VariableDeclarator>): void {
     const { id, init } = node;
-
-    const declaration = node.parent;
-    assert(
-      declaration && declaration.type === 'VariableDeclaration',
-      'parent of declarator must be declaration'
-    );
-    if (!declaration) return;
-
-    const { kind } = declaration as VariableDeclaration;
-    assert(typeof kind === 'string');
-
-    function addVarsToScope(lhs: Pattern, parent: Node): void {
-      // TODO
-    }
-
-    addVarsToScope(id, node);
     this.visit(id);
     if (init) this.visit(init, node);
   }
 
-  ArrayExpression(node: ArrayExpression): void {
+  private ArrayExpression(node: ArrayExpression): void {
     for (const el of node.elements) {
       this.visit(el, node);
     }
   }
 
-  BlockStatement(node: BlockStatement): void {
+  private BlockStatement(node: BlockStatement): void {
     for (const stat of node.body) {
       this.visit(stat, node);
     }
   }
 
-  ExpressionStatement(node: ExpressionStatement): void {
+  private ExpressionStatement(node: ExpressionStatement): void {
     this.visit(node.expression, node);
   }
 
-  AssignmentExpression(node: AssignmentExpression): void {
+  private AssignmentExpression(node: AssignmentExpression): void {
     this.visit(node.left, node);
     this.visit(node.right, node);
   }
 
-  MemberExpression(node: MemberExpression): void {
+  private MemberExpression(node: MemberExpression): void {
     this.visit(node.object, node);
     this.visit(node.property, node);
   }
 
-  ObjectExpression(node: ObjectExpression) {
+  private ObjectExpression(node: ObjectExpression): void {
     for (const property of node.properties) {
       this.visit(property, node);
     }
   }
 
-  Property(node: Property): void {
+  private Property(node: Property): void {
     this.visit(node.key, node);
     this.visit(node.value, node);
   }
 
-  CallExpression(node: CallExpression): void {
+  private CallExpression(node: CallExpression): void {
     this.visit(node.callee, node);
     for (const arg of node.arguments) {
       this.visit(arg, node);
     }
   }
 
-  BinaryExpression(node: BinaryExpression): void {
+  private BinaryExpression(node: BinaryExpression): void {
     this.visit(node.left, node);
     this.visit(node.right, node);
   }
 
-  ReturnStatement(node: ReturnStatement): void {
+  private ReturnStatement(node: ReturnStatement): void {
     this.visit(node.argument ?? null, node);
   }
 
-  TemplateLiteral(node: TemplateLiteral): void {
+  private TemplateLiteral(node: TemplateLiteral): void {
     for (const exp of node.expressions) {
       this.visit(exp, node);
     }
   }
 
-  UnaryExpression(node: UnaryExpression): void {
+  private UnaryExpression(node: UnaryExpression): void {
     this.visit(node.argument, node);
   }
 
-  ForStatement(node: ForStatement): void {
+  private ForStatement(node: ForStatement): void {
     this.visit(node.init ?? null, node);
     this.visit(node.test ?? null, node);
     this.visit(node.update ?? null, node);
     this.visit(node.body, node);
   }
 
-  ForInStatement(node: ForInStatement): void {
+  private ForInStatement(node: ForInStatement): void {
     this.visit(node.left, node);
     this.visit(node.right, node);
     this.visit(node.body, node);
   }
 
-  ForOfStatement(node: ForOfStatement): void {
+  private ForOfStatement(node: ForOfStatement): void {
     this.visit(node.left, node);
     this.visit(node.right, node);
     this.visit(node.body, node);
   }
 
-  WhileStatement(node: WhileStatement): void {
+  private WhileStatement(node: WhileStatement): void {
     this.visit(node.body, node);
   }
 
-  IfStatement(node: IfStatement): void {
+  private IfStatement(node: IfStatement): void {
     this.visit(node.test, node);
     this.visit(node.consequent, node);
     if (node.alternate) this.visit(node.alternate, node);
   }
 
-  DoWhileStatement(node: DoWhileStatement): void {
+  private DoWhileStatement(node: DoWhileStatement): void {
     this.visit(node.body, node);
   }
 
-  TryStatement(node: TryStatement): void {
+  private TryStatement(node: TryStatement): void {
     this.visit(node.block, node);
     if (node.handler) this.visit(node.handler, node);
     if (node.finalizer) this.visit(node.finalizer, node);
   }
 
-  CatchClause(node: CatchClause): void {
+  private CatchClause(node: CatchClause): void {
     this.visit(node.param, node);
     this.visit(node.body, node);
   }
 
-  ThrowStatement(node: ThrowStatement): void {
+  private ThrowStatement(node: ThrowStatement): void {
     this.visit(node.argument, node);
   }
 
-  AssignmentPattern(node: AssignmentPattern): void {
+  private AssignmentPattern(node: AssignmentPattern): void {
     this.visit(node.left, node);
     this.visit(node.right, node);
+  }
+
+  private ImportDeclaration(node: ImportDeclaration): void {
+    this.visit(node.source, node);
+    for (const specifier of node.specifiers) {
+      this.visit(specifier, node);
+    }
+  }
+
+  private FunctionDeclaration(node: FunctionDeclaration): void {
+    this.visit(node.id, node);
+    this.visit(node.body, node);
+    for (const param of node.params) {
+      this.visit(param, node);
+    }
+  }
+
+  FunctionExpression(node: FunctionExpression): void {
+    if (node.id) this.visit(node.id, node);
+    this.visit(node.body, node);
+    for (const param of node.params) this.visit(param, node);
+  }
+
+  ArrowFunctionExpression(node: ArrowFunctionExpression): void {
+    this.visit(node.body, node);
+    for (const param of node.params) {
+      this.visit(param, node);
+    }
   }
 }

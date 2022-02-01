@@ -14,7 +14,7 @@ export function analyzeJS(filePath: string, code: string, visitor?: ASTVisitor) 
   const ast = parseJS(code);
   const checks = checkDescriptors.map((desc: CheckDescriptor) => new Check(desc));
   visitor = visitor || new ASTVisitor(filePath, code, checks);
-  visitor.visit(ast);
+  visitor.checkAST(ast);
 
   // TODO (@injuly): Instead of logging them, return the reports array.
   visitor.logReports();

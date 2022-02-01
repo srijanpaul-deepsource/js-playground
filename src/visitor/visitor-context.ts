@@ -1,71 +1,8 @@
 import { convertReport, ReportDescriptor } from './ds-utils';
 import ASTVisitor from './ast-visitor';
-import { Node, VariableDeclarator } from 'estree';
-
-type VarKind = 'let' | 'const' | 'var' | 'global' | 'unknown';
-
-/**
- * A variable in JS/TS source code emerging either from a var declaration or a parameter
- * or the global scope (eg - 'window').
- */
-export type Variable = {
-  name: string;
-  kind: VarKind;
-  // The scope where this variable has been declared.
-  declScope: Scope;
-};
-
-class Scope {
-  private readonly variables = new Map<string, Variable>();
-  public readonly node?: Node;
-  readonly parent: Scope | null;
-
-  constructor(node?: Node, parentScope?: Scope) {
-    this.parent = parentScope ?? null;
-    this.node = node;
-  }
-
-  /**
-   * Checks if a variable is present in this scope.
-   * Does not check parent scopes.
-   * @param name Name of the variable to look for
-   * @returns true if the variable exists.
-   */
-  hasVariable(name: string): boolean {
-    return this.variables.has(name);
-  }
-
-  /**
-   * Find a variable by it's name. Does not check parent scopes.
-   * @param name Name of the variable to look for
-   * @returns the variable with name `name` or `null`.
-   */
-  getVariable(name: string): Variable | null {
-    return this.variables.get(name) ?? null;
-  }
-
-  /**
-   * Adds a new variable to the current scope. 
-   * @returns true if a new variable was added, false if an existing variable was overriden.
-   */
-  setVariable(name: string, kind: VarKind): boolean {
-    const isOverride = this.variables.has(name);
-    this.variables.set(name, { name, kind, declScope: this});
-    return !isOverride;
-  }
-
-  /**
-   * Find a variable by it's name.
-   * Searches the parent scope if it's not found in the current scope.
-   * @param name Name of the variable to look for.
-   * @returns The variable called `name`, if it exists. Returns `null` if it doesn't.
-   */
-  searchVariable(name: string): Variable | null {
-    const varInSelf = this.getVariable(name);
-    if (varInSelf) return varInSelf;
-    return this.parent?.searchVariable(name) ?? null;
-  }
-}
+import { Scope } from './scope';
+import ESTree from 'estree';
+import { analyzeScope, ESCopeOptions } from './scope-manager';
 
 /**
  * A CheckerContext encapsulates the current state of an ASTVisitor.
@@ -74,55 +11,36 @@ export default class VisitorContext {
   private readonly visitor: ASTVisitor;
   private readonly filePath: string;
   private readonly sourceString: string;
+  private scopeManager: Scope.ScopeManager;
+  private ast: ESTree.Program;
 
-  private currentScope = new Scope();
-  readonly globalScope = this.currentScope;
-
-  constructor(visitor: ASTVisitor, filePath: string, sourceString: string) {
+  constructor(
+    visitor: ASTVisitor,
+    filePath: string,
+    sourceString: string,
+    ast: ESTree.Program,
+    config: ESCopeOptions
+  ) {
     this.visitor = visitor;
-    this.globalScope = this.currentScope;
     this.filePath = filePath;
     this.sourceString = sourceString;
+    this.ast = ast;
+    this.scopeManager = analyzeScope(ast, config);
   }
 
-  /**
-   * Find's a variable by it's name. Returns `null` if no such variable is found.
-   */
-  findVarByName(name: string): Variable | null {
-    return this.currentScope.searchVariable(name);
+  // Get the scope assosciated with `node`.
+  getScope(node: ESTree.Node): Scope.Scope | null {
+    return this.scopeManager.acquire(node);
   }
 
-  /**
-   * Adds a new variable to the current scope.
-   * @returns `true` if a new variable was added.
-   * `false` if an old one was overwritten.
-   */
-  addVariableToScope(name: string, kind?: VarKind): boolean {
-    return this.currentScope.setVariable(name, kind || 'unknown');
-  }
-
-  /**
-   * @typedef {Object} Report An object describing an issue raised.
-   * @property {string} message
-   * @property {SourcePosition|Location} loc
-   */
-
-  // Returns the current scope.
-  getScope(): Scope {
-    return this.currentScope;
-  }
-
-  // Enter a new block scope
-  enterScope(node: Node) {
-    const newScope = new Scope(node, this.currentScope);
-    this.currentScope = newScope;
-  }
-
-  // Exit the currently active scope
-  exitScope() {
-    const prevScope = this.currentScope.parent;
-    if (!prevScope) throw new Error("Attempt to exit global scope");
-    this.currentScope = prevScope;
+  getVariableByName(name: string, initScope: Scope.Scope): Scope.Variable | null {
+    let scope: Scope.Scope | null = initScope;
+    while (scope) {
+      const variable = scope.set.get(name);
+      if (variable) return variable;
+      scope = scope.upper;
+    }
+    return null;
   }
 
   // Raise an issue.
