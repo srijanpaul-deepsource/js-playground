@@ -8,7 +8,7 @@ import ParserFactory from './ParserFactory';
  * @param options Custom options to be passed to the parser if any
  * @returns the AST of the parsed code
  */
-// TODO: Change 'object' type for 'options' arg to a proper interface (type) after deciding on the options input structure
+// TODO: Change 'Object' type for 'options' arg to a proper interface (type) after deciding on the options input structure
 export default function parse(filePath: string, code: string, options: Object = {}) {
   const extension = extname(filePath);
   const parser = ParserFactory.getParser(extension, options);
