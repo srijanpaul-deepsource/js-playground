@@ -84,6 +84,8 @@ export default class ASTVisitor {
   // The list of issues reported so far in DeepSource's format.
   private issues: Issue[] = [];
 
+  private currentNode: Node | null = null;
+
   /**
    * @param filePath Path to the JS file (used for issue reporting).
    * @param source The contents of the JS file.
@@ -158,14 +160,22 @@ export default class ASTVisitor {
       }
     }
 
+    const prevNode = this.currentNode;
+    this.currentNode = node;
     // If this node affects the scope then make the context reflect that change.
-    if (ASTVisitor.ScopingNodeTypes.has(type)) {
+    const affectsScope = ASTVisitor.ScopingNodeTypes.has(type);
+    if (affectsScope) {
       this.context?.setScopeToNode(node);
     }
 
     // 2. Call the visitor's own function for this node type.
     // @ts-ignore
     if (this[type]) this[type](node);
+
+    this.currentNode = prevNode;
+    if (this.currentNode && affectsScope) {
+      this.context?.setScopeToNode(this.currentNode);
+    }
   }
 
   private Program(node: Program): void {

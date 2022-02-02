@@ -1,8 +1,9 @@
 import ESTree from 'estree';
 import { JsNodeNames } from './util';
+import { NodeParentExtension } from './visitor/ast-visitor';
 import VisitorContext from './visitor/visitor-context';
 
-type NodeVisitorFunc<T extends ESTree.BaseNode> = (ctx: VisitorContext, node: T) => void;
+type NodeVisitorFunc<T extends ESTree.BaseNode> = (ctx: VisitorContext, node: T & NodeParentExtension) => void;
 
 export type CheckDescriptor = {
   cache: Record<string, any>;

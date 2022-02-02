@@ -34,6 +34,12 @@ export default class VisitorContext {
     return this.currentScope;
   }
 
+  /**
+   * Find the object describing a variable by it's name.
+   * @param name Name of the variable.
+   * @param initScope The innermost scope where to start looking from.
+   * @returns 
+   */
   getVariableByName(name: string, initScope: Scope.Scope): Scope.Variable | null {
     let scope: Scope.Scope | null = initScope;
     while (scope) {
@@ -44,6 +50,10 @@ export default class VisitorContext {
     return null;
   }
 
+  /**
+   * Set the currently active scope to that of `node`.
+   * @param node The Node which might have a scope assosciated with it.
+   */
   setScopeToNode(node: ESTree.Node): void {
     const scope = this.scopeManager.acquire(node);
     if (scope) this.currentScope = scope;

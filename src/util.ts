@@ -145,3 +145,6 @@ export function assert<T>(value: T, msg?: string): T {
   }
   return value;
 }
+
+// A set of all global variables provided by Node.js runtime.
+export const AllGlobalVars = new Set(Object.getOwnPropertyNames(globalThis));
