@@ -11,6 +11,7 @@ export default class VisitorContext {
   private readonly visitor: ASTVisitor;
   private readonly filePath: string;
   private readonly sourceString: string;
+  private currentScope: Scope.Scope | null = null;
   private scopeManager: Scope.ScopeManager;
   private ast: ESTree.Program;
 
@@ -29,8 +30,8 @@ export default class VisitorContext {
   }
 
   // Get the scope assosciated with `node`.
-  getScope(node: ESTree.Node): Scope.Scope | null {
-    return this.scopeManager.acquire(node);
+  getScope(): Scope.Scope | null  {
+    return this.currentScope;
   }
 
   getVariableByName(name: string, initScope: Scope.Scope): Scope.Variable | null {
@@ -41,6 +42,11 @@ export default class VisitorContext {
       scope = scope.upper;
     }
     return null;
+  }
+
+  setScopeToNode(node: ESTree.Node): void {
+    const scope = this.scopeManager.acquire(node);
+    if (scope) this.currentScope = scope;
   }
 
   // Raise an issue.

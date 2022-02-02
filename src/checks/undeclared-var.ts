@@ -3,7 +3,7 @@ import { CheckDescriptor } from "../check";
 const check: CheckDescriptor = {
   cache: {},
   Identifier(context, node) {
-    const scope = context.getScope(node);
+    const scope = context.getScope();
     if (!scope) return;
     const resolvedVar = context.getVariableByName(node.name, scope);
     if (!resolvedVar) {

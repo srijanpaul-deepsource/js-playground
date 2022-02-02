@@ -37,7 +37,7 @@ import Check from '../check';
 import VisitorContext from './visitor-context';
 import { Issue } from './ds-utils';
 
-import { assert } from '../util';
+import { assert, ASTNode } from '../util';
 
 type IChecksForNodeName = {
   [k: string]: Check[];
@@ -56,6 +56,24 @@ export default class ASTVisitor {
   private filePath: string;
   private source: string;
   private checks: Check[];
+
+  // Nodes that may affect the scope structure by introducing a new scope
+  // in the current chain of scopes.
+  static ScopingNodeTypes = new Set([
+    ASTNode.Program,
+    ASTNode.BlockStatement,
+    ASTNode.FunctionDeclaration,
+    ASTNode.FunctionExpression,
+    ASTNode.ArrowFunctionExpression,
+    ASTNode.CatchClause,
+    ASTNode.ForStatement,
+    ASTNode.ForInStatement,
+    ASTNode.ForOfStatement,
+    ASTNode.WhileStatement,
+    ASTNode.DoWhileStatement,
+    ASTNode.IfStatement,
+    ASTNode.WhileStatement,
+  ]);
 
   /**
    * `checksForNodeType[x]` Returns a list of all the checks that are concerned
@@ -111,7 +129,7 @@ export default class ASTVisitor {
   }
 
   checkAST(program: Program, conf: Object = {}): Issue[] {
-    this.context = new VisitorContext(this, this.filePath, this.source, program, {})
+    this.context = new VisitorContext(this, this.filePath, this.source, program, {});
     this.visit(program);
     return this.issues;
   }
@@ -138,6 +156,11 @@ export default class ASTVisitor {
         // @ts-ignore
         check.visitor[type](this.context, node);
       }
+    }
+
+    // If this node affects the scope then make the context reflect that change.
+    if (ASTVisitor.ScopingNodeTypes.has(type)) {
+      this.context?.setScopeToNode(node);
     }
 
     // 2. Call the visitor's own function for this node type.
