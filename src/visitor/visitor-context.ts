@@ -30,7 +30,7 @@ export default class VisitorContext {
   }
 
   // Get the scope assosciated with `node`.
-  getScope(): Scope.Scope | null  {
+  getScope(): Scope.Scope | null {
     return this.currentScope;
   }
 
@@ -38,7 +38,7 @@ export default class VisitorContext {
    * Find the object describing a variable by it's name.
    * @param name Name of the variable.
    * @param initScope The innermost scope where to start looking from.
-   * @returns 
+   * @returns
    */
   getVariableByName(name: string, initScope: Scope.Scope): Scope.Variable | null {
     let scope: Scope.Scope | null = initScope;
