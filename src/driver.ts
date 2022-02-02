@@ -2,7 +2,7 @@
  * @fileoverview The driver code that crawls a source directory and calls the analyzer on each file.
  */
 
-import { analyzeJS } from './analyzer';
+import { analyze } from './analyzer';
 import path from 'path';
 import fs from 'fs';
 import glob from 'glob';
@@ -42,5 +42,5 @@ function withFilesInDir(srcDir: string, callback: WithFileCallBack, matchPattern
  * @param dirPath path to the directory containing the source code.
  */
 export function analyzeDirectory(dirPath: string) {
-  withFilesInDir(dirPath, analyzeJS, ['**/*.js']);
+  withFilesInDir(dirPath, analyze, ['**/*.js']);
 }
