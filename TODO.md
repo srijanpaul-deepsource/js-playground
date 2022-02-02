@@ -2,3 +2,4 @@
 - [x] Ability to define rules and call them on AST Nodes.
 - [x] Retain state across visits.
 - [ ] Ignore files that match certain patterns.
+- [ ] Add on-exit and on-enter rules.
